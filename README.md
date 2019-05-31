@@ -2,7 +2,7 @@
 
 This is a simple example of how to enable MFA delete on an Amazon S3 bucket.
 
-Note: these instructions are for MacOS.
+Note: these instructions have been tested on MacOS.
 
 Install the Python virtualenv
 
