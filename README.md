@@ -1,4 +1,6 @@
-# Enabling MFA Delete
+# AWS MFA Delete Operations
+
+## Setup
 
 This is a simple example of how to enable MFA delete on an Amazon S3 bucket.
 
@@ -12,6 +14,8 @@ Activate the virtualenv
 
     source ./.venv/bin/activate
 
+## Enabling MFA Delete
+
 Obtain the device serial number.  The string without the quotes should be copied, for example `arn:aws:iam::123456789012:mfa/root-account-mfa-device`
 
     aws iam list-mfa-devices
@@ -19,8 +23,8 @@ Obtain the device serial number.  The string without the quotes should be copied
 Run `enable-mfa-delete.py`
 
     > ./enable-mfa-delete.py
-    Enter the name of the bucket that you want to enable MFA-delete on: mfadeletetestdevopsrockstars
-    Enter your MFA serial number and token code, e.g. <deviceSerialNumber> <tokenCode>: arn:aws:iam::123456789012:mfa/root-account-mfa-device 123456
+    Bucket: mfadeletetestdevopsrockstars
+    <deviceSerialNumber> <tokenCode>: arn:aws:iam::123456789012:mfa/root-account-mfa-device 123456
 
 Verify that it is enabled
 
@@ -34,3 +38,26 @@ Deactivate the virtualenv
 
     deactivate
 
+## Testing MFA delete (can't permanetly delete without MFA)
+
+Create, upload, delete an object, then verify its deleted.
+
+    echo test > test.txt
+    aws s3 cp test.txt s3://mfadeletetestdevopsrockstars
+    aws s3 ls s3://mfadeletetestdevopsrockstars/test.txt
+    aws s3 rm s3://mfadeletetestdevopsrockstars/test.txt
+
+See the deleted version and delete marker
+
+    aws s3api list-object-versions --bucket mfadeletetestdevopsrockstars
+
+Try to delete the deleted version (or the delete marker)
+
+    aws s3api delete-object --bucket mfadeletetestdevopsrockstars --key test.txt --version-id=OcBXW1i5.roITx9Zo58jasvMnu7RWCkj
+    An error occurred (AccessDenied) when calling the DeleteObject operation: Mfa Authentication must be used for this request
+
+## Restore of deleted file when MFA delete is enabled
+
+Essentially delete all `DeleteMarker` entries from `aws s3api list-object-versions --bucket mfadeletetestdevopsrockstars`
+
+    aws s3api delete-object --bucket mfadeletetestdevopsrockstars --key test.txt --version-id=XhJwYocN_4pGw6uolmVdd0CQ7DYpSS7i --mfa 'arn:aws:iam::123456789012:mfa/root-account-mfa-device 123456'

@@ -4,8 +4,8 @@ from botocore.exceptions import ClientError
 
 s3_client = boto3.client('s3')
 s3_bucket = boto3.resource('s3')
-bucket_name = input('Enter the name of the bucket that you want to enable MFA-delete on: ')
-mfa_token = input('Enter your MFA serial number and token code, e.g. <deviceSerialNumber> <tokenCode>: ')
+bucket_name = input('Bucket: ')
+mfa_token = input('<deviceSerialNumber> <tokenCode>: ')
 
 try:
     s3_bucket.meta.client.head_bucket(Bucket=bucket_name)
