@@ -18,8 +18,8 @@ try:
     s3_client.put_bucket_versioning(Bucket = bucket_name,
                                 MFA = mfa_token,
                                 VersioningConfiguration = {
-                                    'MFADelete' : 'Enabled',
-                                    'Status' : 'Enabled'
+                                    'MFADelete' : 'Disabled',
+                                    'Status' : 'Suspended'
                                     }
                                 )
 except ClientError as e:

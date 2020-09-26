@@ -14,7 +14,16 @@ Activate the virtualenv
 
     source ./.venv/bin/activate
 
+Install dependencies
+
+    pip3 install -r freeze.txt
+
 ## Enabling MFA Delete
+
+First, authenticate MFA:
+
+    export AWS_ACCESS_KEY_ID=<key>
+    export AWS_SECRET_ACCESS_KEY=<secret_access_key>
 
 Obtain the device serial number.  The string without the quotes should be copied, for example `arn:aws:iam::123456789012:mfa/root-account-mfa-device`
 
@@ -33,7 +42,36 @@ Verify that it is enabled
     "Status": "Enabled",
     "MFADelete": "Enabled"
     }
-   
+
+Deactivate the virtualenv
+
+    deactivate
+
+## Disabling MFA Delete
+
+First, authenticate MFA:
+
+    export AWS_ACCESS_KEY_ID=<key>
+    export AWS_SECRET_ACCESS_KEY=<secret_access_key>
+
+Obtain the device serial number.  The string without the quotes should be copied, for example `arn:aws:iam::123456789012:mfa/root-account-mfa-device`
+
+    aws iam list-mfa-devices
+
+Run `disable-mfa-delete.py`
+
+    > ./disable-mfa-delete.py
+    Bucket: mfadeletetestdevopsrockstars
+    <deviceSerialNumber> <tokenCode>: arn:aws:iam::123456789012:mfa/root-account-mfa-device 123456
+
+Verify that it is enabled
+
+    > aws s3api get-bucket-versioning --bucket mfadeletetestdevopsrockstars
+    {
+    "Status": "Suspended",
+    "MFADelete": "Disabled"
+    }
+
 Deactivate the virtualenv
 
     deactivate
